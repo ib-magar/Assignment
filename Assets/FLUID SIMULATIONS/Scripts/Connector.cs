@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class Connector : MonoBehaviour
@@ -12,6 +13,7 @@ public class Connector : MonoBehaviour
     [SerializeField] private FluidHandler fluidHandler;
     public float _min_distance_between_objects=1.5f;
 
+    private List<Transform> _liquid_drops= new List<Transform>();
     private void Start()
     {
         mainCamera = Camera.main;
@@ -89,7 +91,7 @@ public class Connector : MonoBehaviour
         Vector2 ray = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero, Mathf.Infinity, layerToDetect);
 
-        // Perform the raycast
+        // Perform the raycast                                
         if (hit.collider != null)
         {
             // A collider on the specified layer was hit by the ray
@@ -98,7 +100,7 @@ public class Connector : MonoBehaviour
             fluidHandler.ChangeFluidColor(hit.collider.GetComponent<Selectable>().color);
             GetLiquidBehaviour(hit.collider.GetComponent<LiquidBehaviour>());
             hit.collider.gameObject.layer = default;
-            StartConnecting(hit.collider.gameObject);
+            StartConnecting(hit.collider.gameObject);     
         }
     }
 

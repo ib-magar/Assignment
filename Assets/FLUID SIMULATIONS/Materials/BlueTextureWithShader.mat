@@ -62,7 +62,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
-    - _Cutoff: 0.25
+    - _Cutoff: 0.31
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
@@ -76,12 +76,12 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Stroke: 0.48
-    - _Stroke2: 0.1
+    - _Stroke2: 0.419
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.16509432, g: 0.80561805, b: 1, a: 1}
+    - _Color: {r: 0, g: 0.26761013, b: 0.3490566, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _StrokeColor: {r: 0.1254902, g: 0.3254902, b: 0.61960787, a: 1}
-    - _StrokeColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _StrokeColor: {r: 0, g: 0.27058825, b: 0.3529412, a: 1}
+    - _StrokeColor2: {r: 0, g: 0.27058825, b: 0.3529412, a: 1}
   m_BuildTextureStacks: []
