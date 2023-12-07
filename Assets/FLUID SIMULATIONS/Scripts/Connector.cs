@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Connector : MonoBehaviour
@@ -14,6 +16,8 @@ public class Connector : MonoBehaviour
     public float _min_distance_between_objects=1.5f;
 
     private List<Transform> _liquid_drops= new List<Transform>();
+    public float intensity = 1f; // Intensity of the wobble effect
+    private Dictionary<Transform, Vector3> initialPositions = new Dictionary<Transform, Vector3>();
     private void Start()
     {
         mainCamera = Camera.main;
@@ -48,17 +52,65 @@ public class Connector : MonoBehaviour
         }
     }
 
+    IEnumerator Wobble()
+    {
+        // Store the initial positions of the GameObjects
+        foreach (Transform go in _liquid_drops)
+        {
+            initialPositions.Add(go, go.transform.position);
+        }
+        foreach (Transform go in _liquid_drops)
+        {
+            // Move the GameObject in a random direction
+            go.transform.position += new Vector3(Random.Range(-intensity, intensity), Random.Range(-intensity, intensity), 0);
+        }
+
+        // Wait for a bit
+        yield return new WaitForSeconds(0.25f);
+
+        foreach (Transform go in _liquid_drops)
+        {
+            // Move the GameObject back to its initial position
+            go.transform.position = Vector3.Lerp(go.transform.position, initialPositions[go], 0.5f);
+        }
+
+        // Wait for a bit
+        yield return new WaitForSeconds(0.25f);
+    
+}
+
     void AddToConnectionList(GameObject g)
     {
         GetLiquidBehaviour(g.GetComponent<LiquidBehaviour>());
         g.layer = default;
         connectedObjects.Add(g);
+        //StartCoroutine(Wobble());   
     }
     [Header("particle effects")]
     public GameObject[] particleEffects;
         GameObject particleEffect;
 
-    void DestroyTheConnectedObjects()
+    Vector3 GetCenterPosition(List<GameObject> transforms)
+    {
+        if (transforms.Count == 0)
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 sum = Vector3.zero;
+        foreach (GameObject t in transforms)
+        {
+            sum += t.transform.position;
+        }
+        return sum / transforms.Count;
+    }
+
+        [Header("Assemble liquids")]
+        [SerializeField] float assembleTime=.25f;
+        [SerializeField] float assembleSpeed=5f;
+    // public Transform targetPos;
+    public Target Coffee;
+        void DestroyTheConnectedObjects()
     {
        
         // Implement the logic to destroy connected objects
@@ -73,15 +125,40 @@ public class Connector : MonoBehaviour
             default: particleEffect = null; break;
         }
 
-        foreach (var g in connectedObjects)
+        StartCoroutine(AssembleLiquids());
+        IEnumerator AssembleLiquids()
         {
-            if (particleEffect == null) particleEffect = particleEffects[0];
-            
+            foreach (var g in connectedObjects)
+            {
+                g.GetComponent<Collider2D>().enabled = false;
+                g.GetComponent<Rigidbody2D>().isKinematic = true;
+            }
+            Vector3 targetPos = GetCenterPosition(connectedObjects);
+            float _assembleTime = assembleTime;
+            while (_assembleTime > 0)
+            {
+                _assembleTime -= Time.deltaTime;
+                foreach (GameObject g in connectedObjects)
+                {
+                    g.transform.position = Vector3.MoveTowards(g.transform.position, targetPos, assembleSpeed * Time.deltaTime);
+                    yield return null;
+                }
+            }
+
+            Coffee.ReceiveFluids(connectedObjects);
+
+            foreach (var g in connectedObjects)
+            {
+                if (particleEffect == null) particleEffect = particleEffects[0];
+
                 Instantiate(particleEffect, g.transform.position, Quaternion.identity);
-            
-            Destroy(g);
+
+                Destroy(g);
+            }
+            connectedObjects.Clear();
+            _liquid_drops.Clear();
         }
-        connectedObjects.Clear();
+
         // Reset currentSelectionLayerMask if needed
         // currentSelectionLayerMask = default;
     }
@@ -107,6 +184,7 @@ public class Connector : MonoBehaviour
     void GetLiquidBehaviour(LiquidBehaviour lq)
     {
         lq?.StartLiquidBehaviour();
+        _liquid_drops.Add(lq.transform);
     }
 
     void StartConnecting(GameObject clickedObject)

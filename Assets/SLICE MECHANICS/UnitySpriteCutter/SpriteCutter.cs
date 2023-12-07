@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnitySpriteCutter.Cutters;
 using UnitySpriteCutter.Tools;
 using GameObjectCreationMode = UnitySpriteCutter.SpriteCutterInput.GameObjectCreationMode;
+using Unity.VisualScripting;
 
 namespace UnitySpriteCutter {
 
@@ -151,6 +152,18 @@ namespace UnitySpriteCutter {
 					firstSideResult = SpriteCutterGameObject.CreateNew( input.gameObject, true );
 					PrepareResultGameObject( firstSideResult, spriteRenderer, meshRenderer, firstCutData );
 					break;
+			}
+
+			if(firstSideResult.gameObject.transform.position.y<=secondSideResult.gameObject.transform.position.y)
+			{
+				firstSideResult.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
+				firstSideResult.gameObject.AddComponent<SlicedPiece>();
+			}
+			else
+			{
+				secondSideResult.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
+				secondSideResult.gameObject.AddComponent<SlicedPiece>();
+
 			}
 
 			return new SpriteCutterOutput() {

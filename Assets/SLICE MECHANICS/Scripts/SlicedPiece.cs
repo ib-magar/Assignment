@@ -13,8 +13,8 @@ public class SlicedPiece : MonoBehaviour
       //  if(!transform.CompareTag("MainObject"))
         {
             GetComponent<Rigidbody2D>().isKinematic = false;
-            yield return new WaitForSeconds(destroyTime > 0 ? destroyTime : 1.5f);
-            //Instantiate(destroyEffect,transform.position, Quaternion.identity); 
+            Instantiate(destroyEffect,transform.position, Quaternion.identity); 
+            yield return new WaitForSeconds(destroyTime > 0 ? destroyTime : .5f);
             Destroy(gameObject);
 
         }

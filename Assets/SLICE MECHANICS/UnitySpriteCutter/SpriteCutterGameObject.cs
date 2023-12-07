@@ -36,8 +36,8 @@ namespace UnitySpriteCutter {
 		public static SpriteCutterGameObject CreateAsInstantiatedCopyOf( GameObject origin, bool secondSide ) {
 			SpriteCutterGameObject result = new SpriteCutterGameObject();
 			result.gameObject = GameObject.Instantiate( origin);
-			//result.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;                                                              //this line is extended.
-			result.gameObject.AddComponent<SlicedPiece>();
+			                                                              //this line is extended.
+			//result.gameObject.AddComponent<SlicedPiece>();
 			result.gameObject.name = origin.name + ( !secondSide ? "_firstSide" : "_secondSide" );
 			return result;
 		}
